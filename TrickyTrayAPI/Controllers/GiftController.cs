@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrickyTrayAPI.DTOs;
+using TrickyTrayAPI.Models;
 using TrickyTrayAPI.Services;
 
 namespace TrickyTrayAPI.Controllers
@@ -45,13 +46,11 @@ namespace TrickyTrayAPI.Controllers
 
         // יצירת מתנה חדשה
         [HttpPost]
-        [Authorize]
-        [Authorize(Roles = "admin")]
-
+        //[Authorize] // Only authenticated users with valid JWT token can create products
         [ProducesResponseType(typeof(GiftViewDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<GiftViewDto>> Create([FromBody] GiftCreateDto createDto)
         {
             try
@@ -70,7 +69,7 @@ namespace TrickyTrayAPI.Controllers
         [ProducesResponseType(typeof(GiftViewDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "manager")]
 
         public async Task<ActionResult<GiftViewDto>> UpdateAsync(int id, [FromBody] GiftUpdateDto updateDto)
         {
@@ -95,7 +94,7 @@ namespace TrickyTrayAPI.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(GiftViewDto), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "manager")]
 
         public async Task<ActionResult<GiftViewDto>> DeleteAsync(int id)
         {

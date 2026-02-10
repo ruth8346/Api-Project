@@ -39,28 +39,36 @@ namespace TrickyTrayAPI.Services
             };
         }
 
-        public async Task<BuyerDto.BuyerViewDto> CreateAsync(BuyerDto.BuyerCreateDto createDto)
+        public async Task<BuyerViewDto> CreateAsync(BuyerCreateDto createDto)
         {
+            // 1) נרמול אימייל
+            var email = createDto.Email?.Trim().ToLower();
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email is required");
+
+            // 2) בדיקת כפילות
+            var existing = await _buyerRepo.GetByEmailAsync(email);
+            if (existing != null)
+                throw new ArgumentException("האימייל כבר קיים במערכת");
 
             var buyer = new Buyer
             {
                 Name = createDto.Name,
                 IdentityNumber = createDto.IdentityNumber,
                 Role = createDto.Role,
-                Email = createDto.Email,
+                Email = email,
                 Phone = createDto.Phone,
-                Password = createDto.Password
+                Password = createDto.Password // (אפשר גם Trim אם רוצים)
             };
 
-
             var savedBuyer = await _buyerRepo.CreateAsync(buyer);
-
-
             return MapToViewDto(savedBuyer);
         }
 
+
         public async Task<BuyerDto.BuyerViewDto?> UpdateAsync(int id, BuyerDto.BuyerUpdateDto updateDto)
         {
+
             var existingBuyer = await _buyerRepo.GetByIdAsync(id);
             if (existingBuyer == null) return null;
 

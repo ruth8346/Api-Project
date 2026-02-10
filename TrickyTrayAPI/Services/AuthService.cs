@@ -5,7 +5,6 @@ using System.Text;
 using TrickyTrayAPI.DTOs;
 using TrickyTrayAPI.Models;
 using TrickyTrayAPI.Repositories;
-using static TrickyTrayAPI.Models.Buyer;
 
 namespace TrickyTrayAPI.Services
 {
@@ -43,14 +42,14 @@ namespace TrickyTrayAPI.Services
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
+            
             var claims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, buyer.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, buyer.Email),
-                    // בדיקה דינמית: אם ה-Role הוא 1, נשלח "manager", אחרת נשלח "user"
-                    new Claim(ClaimTypes.Role, buyer.Role == UserRole.Admin ? "admin" : "user")
-                };
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, buyer.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, buyer.Id.ToString()), // ✅ להוסיף
+                new Claim(JwtRegisteredClaimNames.Email, buyer.Email),
+                new Claim(ClaimTypes.Role, "manager")
+            };
 
             var token = new JwtSecurityToken(
                 issuer,

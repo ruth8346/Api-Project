@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TrickyTrayAPI.Services;
 
 namespace TrickyTrayAPI.Controllers
@@ -15,9 +17,19 @@ namespace TrickyTrayAPI.Controllers
             _orderService = orderService;
             _orderGiftService = orderGiftService;
         }
+        
+        [HttpGet("active-id")]
+        public async Task<IActionResult> GetActiveId([FromQuery] int buyerId)
+        {
+            if (buyerId <= 0)
+                return BadRequest(new { message = "buyerId is required", buyerId });
+
+            var draft = await _orderService.GetOrCreateDraftAsync(buyerId);
+            return Ok(new { id = draft.Id });
+        }
 
         // שליפת סל
-        [HttpGet("{orderId}")]
+        [HttpGet("{orderId:int}")]
         public async Task<IActionResult> GetCart(int orderId)
         {
             var cart = await _orderService.GetOrderViewAsync(orderId);
@@ -31,18 +43,12 @@ namespace TrickyTrayAPI.Controllers
         [HttpPost("{orderId}/add/{giftId}")]
         public async Task<IActionResult> AddGift(int orderId, int giftId)
         {
-            try
-            {
-                var result = await _orderGiftService.AddGiftAsync(orderId, giftId);
-                return Ok(new { success = true });
-            }
-            catch (InvalidOperationException ex)
-            {
-                // מחזירים 200 OK כדי שהדפדפן לא יצעק, אבל עם success = false
-                return Ok(new { success = false, message = ex.Message });
-            }
-        }
+            var success = await _orderGiftService.AddGiftAsync(orderId, giftId);
+            if (!success)
+                return BadRequest("Cannot add gift.");
 
+            return Ok();
+        }
 
         // הסרת מתנה מהסל
         [HttpDelete("{orderId}/remove/{giftId}")]
@@ -65,5 +71,6 @@ namespace TrickyTrayAPI.Controllers
 
             return Ok();
         }
+
     }
 }

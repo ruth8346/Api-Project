@@ -5,9 +5,12 @@ namespace TrickyTrayAPI.DTOs
     public class DonorViewDto
     {
         public int Id { get; set; }
+
+        [Required]
+        [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
+
         public string? Email { get; set; }
-        public string? Phone { get; set; } // <--- תוסיפי את זה כאן!
         public ICollection<GiftViewDto> Gifts { get; set; } = new List<GiftViewDto>();
     }
 

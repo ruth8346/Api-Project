@@ -1,6 +1,7 @@
 ﻿using TrickyTrayAPI.DTOs;
 using TrickyTrayAPI.Models;
 using TrickyTrayAPI.Repositories;
+using static TrickyTrayAPI.DTOs.BuyerDto;
 
 namespace TrickyTrayAPI.Services
 {
@@ -19,17 +20,12 @@ namespace TrickyTrayAPI.Services
             // 1. קבלת הנתונים מה-Repository
             var donors = await _donorRepo.GetAllDonorsWithGiftsAsync();
 
-            // 2. המרה של כל תורם ברשימה ל-DTO (Mapping)
+            // 2. המרה של כל תורם ברשימה ל-DTO
             return donors.Select(donor => new DonorViewDto
             {
                 Id = donor.Id,
                 Name = donor.Name,
-
-                // הוספת השורות האלו היא קריטית:
-                Email = donor.Email, // עכשיו האימייל יעבור מה-Database ל-DTO
-                Phone = donor.Phone, // עכשיו הטלפון יעבור (בהנחה שהוספת אותו ל-DonorViewDto)
-
-                // המרה של רשימת המתנות
+                // המרה של רשימת המתנות של אותו תורם
                 Gifts = donor.Gifts.Select(g => new GiftViewDto
                 {
                     Name = g.Name
@@ -49,8 +45,6 @@ namespace TrickyTrayAPI.Services
             {
                 Id = d.Id,
                 Name = d.Name,
-                Email = d.Email, // חסר היה כאן!
-                Phone = d.Phone  // חסר היה כאן!
             };
         }
 

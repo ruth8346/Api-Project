@@ -14,9 +14,15 @@ namespace TrickyTrayAPI.Controllers
             _service = service;
         }
 
+        // 📌 השגת הסטטוס הנוכחי
         [HttpGet]
-        public ActionResult<SystemState> GetState() => Ok(_service.GetState());
+        public ActionResult<SystemState> GetState()
+        {
+            var state = _service.GetState();
+            return Ok(state);
+        }
 
+        // 📌 פתיחת המכירה (Start)
         [HttpPost("start")]
         public IActionResult StartSale()
         {
@@ -31,18 +37,14 @@ namespace TrickyTrayAPI.Controllers
             }
         }
 
+        // 📌 סיום המכירה והגרלה (Finish)
         [HttpPost("finish")]
-        public async Task<IActionResult> FinishSale()
+        public IActionResult FinishSale()
         {
             try
             {
-                // קריאה לפונקציה האסינכרונית החדשה
-                var winners = await _service.FinishSaleAsync();
-                return Ok(new
-                {
-                    message = "Sale finished and winners drawn successfully.",
-                    winners = winners
-                });
+                _service.FinishSale();
+                return Ok(new { message = "Sale finished successfully." });
             }
             catch (InvalidOperationException ex)
             {
@@ -50,6 +52,7 @@ namespace TrickyTrayAPI.Controllers
             }
         }
 
+        // 📌 איפוס המערכת (Reset)
         [HttpPost("reset")]
         public IActionResult Reset()
         {

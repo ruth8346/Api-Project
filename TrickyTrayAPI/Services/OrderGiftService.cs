@@ -20,7 +20,7 @@ namespace TrickyTrayAPI.Services
 
         {
             var systemState = _systemStateService.GetState();
-            if (systemState.Status != SystemState.SaleStatus.Active)
+            if (systemState.Status != SystemState.SaleStatus.Draft)
             {
                 throw new InvalidOperationException("Cannot add gift to cart now.");
             }
