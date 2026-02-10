@@ -1,0 +1,6 @@
+@TrickyTrayAPI_HostAddress = http://localhost:5272
+
+GET {{TrickyTrayAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
