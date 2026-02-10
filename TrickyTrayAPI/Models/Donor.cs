@@ -13,11 +13,11 @@ namespace TrickyTrayAPI.Models
 
         [EmailAddress]
         [MaxLength(256)]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(20)]
-        public string? Phone { get; set; }
+        public string Phone { get; set; } = string.Empty;
         public ICollection<Gift> Gifts { get; set; } = new List<Gift>();
     }
 }

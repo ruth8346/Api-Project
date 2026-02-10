@@ -28,17 +28,29 @@ namespace TrickyTrayAPI.Repositories
 
         public async Task<Buyer?> GetByEmailAsync(string email)
         {
+            if (string.IsNullOrWhiteSpace(email)) return null;
+
+            var normalized = email.Trim().ToLower();
+
             return await _context.Buyers
                 .AsNoTracking()
-                .FirstOrDefaultAsync(b => b.Email == email);
+                .FirstOrDefaultAsync(b => b.Email.Trim().ToLower() == normalized);
         }
+
 
         public async Task<Buyer> CreateAsync(Buyer buyer)
         {
+            buyer.Email = buyer.Email.Trim().ToLower();
+
+            var exists = await _context.Buyers.AnyAsync(b => b.Email.Trim().ToLower() == buyer.Email);
+            if (exists)
+                throw new InvalidOperationException("Email already exists");
+
             _context.Buyers.Add(buyer);
             await _context.SaveChangesAsync();
             return buyer;
         }
+
 
         public async Task<Buyer?> UpdateAsync(Buyer buyer)
         {

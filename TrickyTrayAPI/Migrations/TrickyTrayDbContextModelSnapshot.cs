@@ -161,6 +161,9 @@ namespace TrickyTrayAPI.Migrations
                     b.Property<int>("GiftId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("GiftId1")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsWinner")
                         .HasColumnType("bit");
 
@@ -170,6 +173,8 @@ namespace TrickyTrayAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GiftId");
+
+                    b.HasIndex("GiftId1");
 
                     b.HasIndex("OrderId");
 
@@ -209,8 +214,7 @@ namespace TrickyTrayAPI.Migrations
                 {
                     b.HasOne("TrickyTrayAPI.Models.Donor", "Donor")
                         .WithMany("Gifts")
-                        .HasForeignKey("DonorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DonorId");
 
                     b.Navigation("Donor");
                 });
@@ -229,10 +233,14 @@ namespace TrickyTrayAPI.Migrations
             modelBuilder.Entity("TrickyTrayAPI.Models.OrderGift", b =>
                 {
                     b.HasOne("TrickyTrayAPI.Models.Gift", "Gift")
-                        .WithMany("OrderGifts")
+                        .WithMany()
                         .HasForeignKey("GiftId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TrickyTrayAPI.Models.Gift", null)
+                        .WithMany("OrderGifts")
+                        .HasForeignKey("GiftId1");
 
                     b.HasOne("TrickyTrayAPI.Models.Order", "Order")
                         .WithMany("OrderGifts")

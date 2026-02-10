@@ -25,12 +25,11 @@ namespace TrickyTrayAPI.Data
             base.OnModelCreating(modelBuilder);
 
             // Donor -> Gifts (one-to-many)
-            // Donor -> Gifts (one-to-many)
             modelBuilder.Entity<Gift>()
                 .HasOne(g => g.Donor)
                 .WithMany(d => d.Gifts)
-                .HasForeignKey(g => g.DonorId)
-                .OnDelete(DeleteBehavior.Cascade); // <--- זה השורה שחסרה לך!
+                .HasForeignKey(g => g.DonorId);
+
             // Buyer -> Orders (one-to-many)
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Buyer)
@@ -39,15 +38,14 @@ namespace TrickyTrayAPI.Data
 
             // Order <-> Gift via OrderGift (many-to-many עם טבלת ביניים)
             modelBuilder.Entity<OrderGift>()
-            .HasOne(og => og.Gift)
-            .WithMany() // או WithMany(g => g.OrderGifts) אם קיים
-            .HasForeignKey(og => og.GiftId); // זה ימנע את יצירת GiftId1
+                .HasOne(og => og.Order)
+                .WithMany(o => o.OrderGifts)
+                .HasForeignKey(og => og.OrderId);
 
             modelBuilder.Entity<OrderGift>()
-       .HasOne(og => og.Gift)
-       .WithMany(g => g.OrderGifts) // ודאי שהשדה הזה קיים במודל Gift
-       .HasForeignKey(og => og.GiftId)
-       .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(og => og.Gift)
+                .WithMany()
+                .HasForeignKey(og => og.GiftId);
 
             modelBuilder.Entity<SystemState>()
                 .HasData(new SystemState
